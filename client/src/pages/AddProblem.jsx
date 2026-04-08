@@ -2,50 +2,204 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api'
 
+const DIFFICULTY_COLORS = {
+  Easy: { bg: 'rgba(52,211,153,0.12)', color: '#34d399', border: 'rgba(52,211,153,0.3)' },
+  Medium: { bg: 'rgba(251,191,36,0.12)', color: '#fbbf24', border: 'rgba(251,191,36,0.3)' },
+  Hard: { bg: 'rgba(248,113,113,0.12)', color: '#f87171', border: 'rgba(248,113,113,0.3)' },
+}
+
 export default function AddProblem() {
   const [form, setForm] = useState({
-    title: '', difficulty: 'Easy', topic: '', status: 'Solved', timeTaken: '', attempts: 1, notes: ''
+    title: '', difficulty: 'Easy', topic: '', status: 'Solved',
+    timeTaken: '', attempts: 1, notes: ''
   })
+  const [saving, setSaving] = useState(false)
   const navigate = useNavigate()
 
   const handleSubmit = async () => {
+    setSaving(true)
     try {
       await api.post('/problems', form)
       navigate('/dashboard')
-    } catch (err) {
+    } catch {
       alert('Error saving problem')
+      setSaving(false)
     }
   }
 
+  const dc = DIFFICULTY_COLORS[form.difficulty]
+
   return (
-    <div style={styles.container}>
-      <div style={styles.box}>
-        <h2>Log a Problem</h2>
-        <input style={styles.input} placeholder="Problem title"
-          onChange={e => setForm({...form, title: e.target.value})} />
-        <select style={styles.input} onChange={e => setForm({...form, difficulty: e.target.value})}>
-          <option>Easy</option><option>Medium</option><option>Hard</option>
-        </select>
-        <input style={styles.input} placeholder="Topic (e.g. Arrays, Trees)"
-          onChange={e => setForm({...form, topic: e.target.value})} />
-        <select style={styles.input} onChange={e => setForm({...form, status: e.target.value})}>
-          <option>Solved</option><option>Attempted</option><option>Unsolved</option>
-        </select>
-        <input style={styles.input} placeholder="Time taken (minutes)" type="number"
-          onChange={e => setForm({...form, timeTaken: e.target.value})} />
-        <textarea style={styles.input} placeholder="Notes / approach"
-          onChange={e => setForm({...form, notes: e.target.value})} />
-        <button style={styles.btn} onClick={handleSubmit}>Save Problem</button>
-        <button style={styles.back} onClick={() => navigate('/dashboard')}>Back</button>
+    <div style={s.page}>
+      <div style={s.container}>
+
+        {/* Header */}
+        <div style={s.header}>
+          <button style={s.backBtn} onClick={() => navigate('/dashboard')}>
+            ← Dashboard
+          </button>
+          <div style={s.headerRight}>
+            <span style={{...s.diffBadge, background: dc.bg, color: dc.color, border: `1px solid ${dc.border}`}}>
+              {form.difficulty}
+            </span>
+          </div>
+        </div>
+
+        <h1 style={s.title}>Log a problem</h1>
+        <p style={s.sub}>Record what you solved and how</p>
+
+        <div style={s.form}>
+          {/* Title */}
+          <div style={s.field}>
+            <label style={s.label}>Problem title</label>
+            <input
+              placeholder="e.g. Two Sum, LRU Cache..."
+              value={form.title}
+              onChange={e => setForm({...form, title: e.target.value})}
+            />
+          </div>
+
+          {/* Row: Difficulty + Topic */}
+          <div style={s.row}>
+            <div style={s.field}>
+              <label style={s.label}>Difficulty</label>
+              <select value={form.difficulty} onChange={e => setForm({...form, difficulty: e.target.value})}>
+                <option>Easy</option>
+                <option>Medium</option>
+                <option>Hard</option>
+              </select>
+            </div>
+            <div style={s.field}>
+              <label style={s.label}>Topic</label>
+              <input
+                placeholder="Arrays, Trees, DP..."
+                value={form.topic}
+                onChange={e => setForm({...form, topic: e.target.value})}
+              />
+            </div>
+          </div>
+
+          {/* Row: Status + Time */}
+          <div style={s.row}>
+            <div style={s.field}>
+              <label style={s.label}>Status</label>
+              <select value={form.status} onChange={e => setForm({...form, status: e.target.value})}>
+                <option>Solved</option>
+                <option>Attempted</option>
+                <option>Unsolved</option>
+              </select>
+            </div>
+            <div style={s.field}>
+              <label style={s.label}>Time taken (mins)</label>
+              <input
+                type="number"
+                placeholder="e.g. 25"
+                value={form.timeTaken}
+                onChange={e => setForm({...form, timeTaken: e.target.value})}
+              />
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div style={s.field}>
+            <label style={s.label}>Notes / approach</label>
+            <textarea
+              placeholder="Key insight, algorithm used, what tripped you up..."
+              value={form.notes}
+              onChange={e => setForm({...form, notes: e.target.value})}
+              style={{minHeight: '100px'}}
+            />
+          </div>
+
+          {/* Actions */}
+          <div style={s.actions}>
+            <button style={s.cancelBtn} onClick={() => navigate('/dashboard')}>Cancel</button>
+            <button
+              style={{...s.saveBtn, opacity: saving ? 0.6 : 1}}
+              onClick={handleSubmit}
+              disabled={saving}
+            >
+              {saving ? 'Saving...' : 'Save problem →'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )
 }
 
-const styles = {
-  container: { display:'flex', justifyContent:'center', alignItems:'center', minHeight:'100vh', background:'#f0f0f0' },
-  box: { background:'white', padding:'2rem', borderRadius:'10px', width:'360px', display:'flex', flexDirection:'column', gap:'1rem' },
-  input: { padding:'10px', borderRadius:'6px', border:'1px solid #ccc', fontSize:'14px', width:'100%' },
-  btn: { padding:'10px', background:'#4f46e5', color:'white', border:'none', borderRadius:'6px', cursor:'pointer' },
-  back: { padding:'10px', background:'#eee', border:'none', borderRadius:'6px', cursor:'pointer' }
+const s = {
+  page: {
+    minHeight: '100vh',
+    background: 'var(--bg)',
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '3rem 1rem',
+  },
+  container: {
+    width: '100%',
+    maxWidth: '560px',
+  },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '2rem',
+  },
+  backBtn: {
+    background: 'transparent',
+    border: '1px solid var(--border)',
+    color: 'var(--text-secondary)',
+    borderRadius: 'var(--radius-sm)',
+    padding: '7px 14px',
+    fontSize: '13px',
+    fontFamily: 'var(--font-display)',
+    cursor: 'pointer',
+    transition: 'border-color 0.15s, color 0.15s',
+  },
+  headerRight: { display: 'flex', gap: '8px' },
+  diffBadge: {
+    padding: '5px 12px',
+    borderRadius: '20px',
+    fontSize: '12px',
+    fontWeight: '600',
+    fontFamily: 'var(--font-mono)',
+    letterSpacing: '0.5px',
+  },
+  title: { fontSize: '28px', fontWeight: '700', letterSpacing: '-0.8px', marginBottom: '6px' },
+  sub: { fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '2rem' },
+  form: {
+    background: 'var(--bg-card)',
+    border: '1px solid var(--border)',
+    borderRadius: 'var(--radius)',
+    padding: '1.75rem',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.25rem',
+  },
+  field: { display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 },
+  label: { fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.8px' },
+  row: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' },
+  actions: { display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '0.5rem' },
+  cancelBtn: {
+    background: 'transparent',
+    border: '1px solid var(--border)',
+    color: 'var(--text-secondary)',
+    borderRadius: 'var(--radius-sm)',
+    padding: '10px 20px',
+    fontSize: '14px',
+    fontFamily: 'var(--font-display)',
+    cursor: 'pointer',
+  },
+  saveBtn: {
+    background: 'var(--accent)',
+    color: 'white',
+    border: 'none',
+    borderRadius: 'var(--radius-sm)',
+    padding: '10px 24px',
+    fontSize: '14px',
+    fontWeight: '600',
+    fontFamily: 'var(--font-display)',
+    cursor: 'pointer',
+  },
 }

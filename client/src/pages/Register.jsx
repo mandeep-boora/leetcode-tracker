@@ -5,42 +5,119 @@ import api from '../api'
 export default function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '' })
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setLoading(true)
     try {
       const res = await api.post('/auth/register', form)
       localStorage.setItem('token', res.data.token)
       localStorage.setItem('name', res.data.name)
       navigate('/dashboard')
-    } catch (err) {
+    } catch {
       setError('Something went wrong. Try a different email.')
+      setLoading(false)
     }
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.box}>
-        <h2>Create Account</h2>
-        {error && <p style={styles.error}>{error}</p>}
-        <input style={styles.input} placeholder="Name"
-          onChange={e => setForm({...form, name: e.target.value})} />
-        <input style={styles.input} placeholder="Email"
-          onChange={e => setForm({...form, email: e.target.value})} />
-        <input style={styles.input} placeholder="Password" type="password"
-          onChange={e => setForm({...form, password: e.target.value})} />
-        <button style={styles.btn} onClick={handleSubmit}>Register</button>
-        <p>Have an account? <Link to="/login">Login</Link></p>
+    <div style={s.page}>
+      <div style={s.grid} aria-hidden="true">
+        {Array.from({length: 80}).map((_, i) => <div key={i} style={s.cell} />)}
+      </div>
+      <div style={s.card}>
+        <div style={s.logo}>DSA<span style={s.logoAccent}>.</span></div>
+        <h1 style={s.title}>Create account</h1>
+        <p style={s.sub}>Start tracking your DSA journey</p>
+
+        {error && <div style={s.error}>{error}</div>}
+
+        <div style={s.field}>
+          <label style={s.label}>Name</label>
+          <input placeholder="Your name" onChange={e => setForm({...form, name: e.target.value})} />
+        </div>
+        <div style={s.field}>
+          <label style={s.label}>Email</label>
+          <input type="email" placeholder="you@example.com" onChange={e => setForm({...form, email: e.target.value})} />
+        </div>
+        <div style={s.field}>
+          <label style={s.label}>Password</label>
+          <input type="password" placeholder="••••••••" onChange={e => setForm({...form, password: e.target.value})} />
+        </div>
+
+        <button style={{...s.btn, opacity: loading ? 0.6 : 1}} onClick={handleSubmit} disabled={loading}>
+          {loading ? 'Creating account...' : 'Get started →'}
+        </button>
+
+        <p style={s.footer}>Already have an account? <Link to="/login">Sign in</Link></p>
       </div>
     </div>
   )
 }
 
-const styles = {
-  container: { display:'flex', justifyContent:'center', alignItems:'center', height:'100vh', background:'#f0f0f0' },
-  box: { background:'white', padding:'2rem', borderRadius:'10px', width:'320px', display:'flex', flexDirection:'column', gap:'1rem' },
-  input: { padding:'10px', borderRadius:'6px', border:'1px solid #ccc', fontSize:'14px' },
-  btn: { padding:'10px', background:'#4f46e5', color:'white', border:'none', borderRadius:'6px', cursor:'pointer', fontSize:'15px' },
-  error: { color:'red', fontSize:'13px' }
+const s = {
+  page: {
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'var(--bg)',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  grid: {
+    position: 'absolute', inset: 0,
+    display: 'grid',
+    gridTemplateColumns: 'repeat(10, 1fr)',
+    gridTemplateRows: 'repeat(8, 1fr)',
+    pointerEvents: 'none',
+    opacity: 0.3,
+  },
+  cell: { border: '1px solid rgba(124,108,255,0.08)' },
+  card: {
+    position: 'relative',
+    background: 'var(--bg-card)',
+    border: '1px solid var(--border)',
+    borderRadius: 'var(--radius)',
+    padding: '2.5rem',
+    width: '380px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+    boxShadow: '0 0 60px rgba(124,108,255,0.06)',
+  },
+  logo: {
+    fontFamily: 'var(--font-mono)',
+    fontSize: '22px',
+    fontWeight: '500',
+    letterSpacing: '-0.5px',
+    marginBottom: '0.5rem',
+  },
+  logoAccent: { color: 'var(--accent)' },
+  title: { fontSize: '24px', fontWeight: '600', letterSpacing: '-0.5px' },
+  sub: { fontSize: '14px', color: 'var(--text-secondary)', marginTop: '-0.5rem' },
+  error: {
+    background: 'rgba(248,113,113,0.1)',
+    border: '1px solid rgba(248,113,113,0.3)',
+    borderRadius: 'var(--radius-sm)',
+    padding: '10px 14px',
+    fontSize: '13px',
+    color: 'var(--red)',
+  },
+  field: { display: 'flex', flexDirection: 'column', gap: '6px' },
+  label: { fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500' },
+  btn: {
+    background: 'var(--accent)',
+    color: 'white',
+    border: 'none',
+    borderRadius: 'var(--radius-sm)',
+    padding: '12px',
+    fontSize: '15px',
+    fontWeight: '600',
+    fontFamily: 'var(--font-display)',
+    marginTop: '0.5rem',
+  },
+  footer: { fontSize: '13px', color: 'var(--text-secondary)', textAlign: 'center' },
 }
