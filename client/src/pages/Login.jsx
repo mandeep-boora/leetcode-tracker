@@ -8,8 +8,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async () => {
     setLoading(true)
     try {
       const res = await api.post('/auth/login', form)
@@ -24,13 +23,19 @@ export default function Login() {
 
   return (
     <div style={s.page}>
-      <div style={s.grid} aria-hidden="true">
-        {Array.from({length: 80}).map((_, i) => <div key={i} style={s.cell} />)}
-      </div>
+      {/* Decorative blobs */}
+      <div style={s.blob1} />
+      <div style={s.blob2} />
+
       <div style={s.card}>
-        <div style={s.logo}>DSA<span style={s.logoAccent}>.</span></div>
+        {/* Logo */}
+        <div style={s.logoRow}>
+          <div style={s.logoIcon}>D</div>
+          <span style={s.logoText}>DSA Tracker</span>
+        </div>
+
         <h1 style={s.title}>Welcome back</h1>
-        <p style={s.sub}>Sign in to track your progress</p>
+        <p style={s.sub}>Sign in to continue your streak</p>
 
         {error && <div style={s.error}>{error}</div>}
 
@@ -51,11 +56,15 @@ export default function Login() {
           />
         </div>
 
-        <button style={{...s.btn, opacity: loading ? 0.6 : 1}} onClick={handleSubmit} disabled={loading}>
-          {loading ? 'Signing in...' : 'Sign in →'}
+        <button
+          style={{...s.btn, opacity: loading ? 0.7 : 1}}
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? 'Signing in…' : 'Sign in'}
         </button>
 
-        <p style={s.footer}>No account? <Link to="/register">Create one</Link></p>
+        <p style={s.footer}>No account? <Link to="/register">Create one free</Link></p>
       </div>
     </div>
   )
@@ -64,50 +73,64 @@ export default function Login() {
 const s = {
   page: {
     minHeight: '100vh',
+    background: 'var(--bg)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: 'var(--bg)',
     position: 'relative',
     overflow: 'hidden',
   },
-  grid: {
-    position: 'absolute', inset: 0,
-    display: 'grid',
-    gridTemplateColumns: 'repeat(10, 1fr)',
-    gridTemplateRows: 'repeat(8, 1fr)',
+  blob1: {
+    position: 'absolute',
+    width: '500px', height: '500px',
+    borderRadius: '50%',
+    background: 'radial-gradient(circle, rgba(21,180,65,0.12) 0%, transparent 70%)',
+    top: '-100px', right: '-100px',
     pointerEvents: 'none',
-    opacity: 0.3,
   },
-  cell: {
-    border: '1px solid rgba(124,108,255,0.08)',
+  blob2: {
+    position: 'absolute',
+    width: '400px', height: '400px',
+    borderRadius: '50%',
+    background: 'radial-gradient(circle, rgba(21,180,65,0.07) 0%, transparent 70%)',
+    bottom: '-80px', left: '-80px',
+    pointerEvents: 'none',
   },
   card: {
     position: 'relative',
     background: 'var(--bg-card)',
-    border: '1px solid var(--border)',
+    border: '1.5px solid var(--border)',
     borderRadius: 'var(--radius)',
     padding: '2.5rem',
-    width: '380px',
+    width: '400px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '1rem',
-    boxShadow: '0 0 60px rgba(124,108,255,0.06)',
+    gap: '1.1rem',
+    boxShadow: 'var(--shadow-md)',
   },
-  logo: {
+  logoRow: {
+    display: 'flex', alignItems: 'center', gap: '10px',
+    marginBottom: '0.4rem',
+  },
+  logoIcon: {
+    width: '34px', height: '34px',
+    background: 'var(--accent)',
+    color: '#fff',
+    borderRadius: '9px',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    fontSize: '16px', fontWeight: '700',
+  },
+  logoText: {
     fontFamily: 'var(--font-mono)',
-    fontSize: '22px',
+    fontSize: '15px',
     fontWeight: '500',
     color: 'var(--text-primary)',
-    letterSpacing: '-0.5px',
-    marginBottom: '0.5rem',
+    letterSpacing: '-0.3px',
   },
-  logoAccent: { color: 'var(--accent)' },
   title: {
-    fontSize: '24px',
-    fontWeight: '600',
+    fontSize: '26px', fontWeight: '700',
+    letterSpacing: '-0.6px',
     color: 'var(--text-primary)',
-    letterSpacing: '-0.5px',
   },
   sub: {
     fontSize: '14px',
@@ -115,27 +138,37 @@ const s = {
     marginTop: '-0.5rem',
   },
   error: {
-    background: 'rgba(248,113,113,0.1)',
-    border: '1px solid rgba(248,113,113,0.3)',
+    background: '#FEF2F2',
+    border: '1.5px solid #FECACA',
     borderRadius: 'var(--radius-sm)',
     padding: '10px 14px',
     fontSize: '13px',
     color: 'var(--red)',
   },
   field: { display: 'flex', flexDirection: 'column', gap: '6px' },
-  label: { fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500' },
+  label: {
+    fontSize: '12px',
+    color: 'var(--text-secondary)',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: '0.7px',
+  },
   btn: {
     background: 'var(--accent)',
-    color: 'white',
-    border: 'none',
+    color: '#fff',
     borderRadius: 'var(--radius-sm)',
     padding: '12px',
     fontSize: '15px',
-    fontWeight: '600',
+    fontWeight: '700',
     fontFamily: 'var(--font-display)',
-    letterSpacing: '0.2px',
-    marginTop: '0.5rem',
-    transition: 'opacity 0.15s, transform 0.1s',
+    marginTop: '0.3rem',
+    letterSpacing: '0.1px',
+    border: 'none',
+    cursor: 'pointer',
   },
-  footer: { fontSize: '13px', color: 'var(--text-secondary)', textAlign: 'center' },
+  footer: {
+    fontSize: '13px',
+    color: 'var(--text-secondary)',
+    textAlign: 'center',
+  },
 }

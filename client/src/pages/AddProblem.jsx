@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api'
 
-const DIFFICULTY_COLORS = {
-  Easy: { bg: 'rgba(52,211,153,0.12)', color: '#34d399', border: 'rgba(52,211,153,0.3)' },
-  Medium: { bg: 'rgba(251,191,36,0.12)', color: '#fbbf24', border: 'rgba(251,191,36,0.3)' },
-  Hard: { bg: 'rgba(248,113,113,0.12)', color: '#f87171', border: 'rgba(248,113,113,0.3)' },
+const DIFF = {
+  Easy:   { bg: '#F0FDF4', color: '#15803D', border: '#BBF7D0' },
+  Medium: { bg: '#FFFBEB', color: '#B45309', border: '#FDE68A' },
+  Hard:   { bg: '#FEF2F2', color: '#B91C1C', border: '#FECACA' },
 }
 
 export default function AddProblem() {
@@ -27,39 +27,38 @@ export default function AddProblem() {
     }
   }
 
-  const dc = DIFFICULTY_COLORS[form.difficulty]
+  const dc = DIFF[form.difficulty]
 
   return (
     <div style={s.page}>
       <div style={s.container}>
 
         {/* Header */}
-        <div style={s.header}>
+        <div style={s.topbar}>
           <button style={s.backBtn} onClick={() => navigate('/dashboard')}>
-            ← Dashboard
+            ← Back to dashboard
           </button>
-          <div style={s.headerRight}>
-            <span style={{...s.diffBadge, background: dc.bg, color: dc.color, border: `1px solid ${dc.border}`}}>
-              {form.difficulty}
-            </span>
-          </div>
+          <span style={{...s.diffPill, background: dc.bg, color: dc.color, border: `1.5px solid ${dc.border}`}}>
+            {form.difficulty}
+          </span>
         </div>
 
         <h1 style={s.title}>Log a problem</h1>
-        <p style={s.sub}>Record what you solved and how</p>
+        <p style={s.sub}>Record what you solved and how you approached it</p>
 
         <div style={s.form}>
+
           {/* Title */}
           <div style={s.field}>
             <label style={s.label}>Problem title</label>
             <input
-              placeholder="e.g. Two Sum, LRU Cache..."
+              placeholder="e.g. Two Sum, Binary Search, LRU Cache…"
               value={form.title}
               onChange={e => setForm({...form, title: e.target.value})}
             />
           </div>
 
-          {/* Row: Difficulty + Topic */}
+          {/* Difficulty + Topic */}
           <div style={s.row}>
             <div style={s.field}>
               <label style={s.label}>Difficulty</label>
@@ -72,14 +71,14 @@ export default function AddProblem() {
             <div style={s.field}>
               <label style={s.label}>Topic</label>
               <input
-                placeholder="Arrays, Trees, DP..."
+                placeholder="Arrays, Trees, DP…"
                 value={form.topic}
                 onChange={e => setForm({...form, topic: e.target.value})}
               />
             </div>
           </div>
 
-          {/* Row: Status + Time */}
+          {/* Status + Time */}
           <div style={s.row}>
             <div style={s.field}>
               <label style={s.label}>Status</label>
@@ -104,22 +103,20 @@ export default function AddProblem() {
           <div style={s.field}>
             <label style={s.label}>Notes / approach</label>
             <textarea
-              placeholder="Key insight, algorithm used, what tripped you up..."
+              placeholder="Key insight, algorithm used, what tripped you up…"
               value={form.notes}
               onChange={e => setForm({...form, notes: e.target.value})}
-              style={{minHeight: '100px'}}
             />
           </div>
 
-          {/* Actions */}
           <div style={s.actions}>
             <button style={s.cancelBtn} onClick={() => navigate('/dashboard')}>Cancel</button>
             <button
-              style={{...s.saveBtn, opacity: saving ? 0.6 : 1}}
+              style={{...s.saveBtn, opacity: saving ? 0.7 : 1}}
               onClick={handleSubmit}
               disabled={saving}
             >
-              {saving ? 'Saving...' : 'Save problem →'}
+              {saving ? 'Saving…' : 'Save problem →'}
             </button>
           </div>
         </div>
@@ -136,69 +133,66 @@ const s = {
     justifyContent: 'center',
     padding: '3rem 1rem',
   },
-  container: {
-    width: '100%',
-    maxWidth: '560px',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '2rem',
+  container: { width: '100%', maxWidth: '580px' },
+  topbar: {
+    display: 'flex', justifyContent: 'space-between',
+    alignItems: 'center', marginBottom: '1.75rem',
   },
   backBtn: {
     background: 'transparent',
-    border: '1px solid var(--border)',
+    border: '1.5px solid var(--border)',
     color: 'var(--text-secondary)',
     borderRadius: 'var(--radius-sm)',
     padding: '7px 14px',
-    fontSize: '13px',
+    fontSize: '13px', fontWeight: '500',
     fontFamily: 'var(--font-display)',
     cursor: 'pointer',
-    transition: 'border-color 0.15s, color 0.15s',
   },
-  headerRight: { display: 'flex', gap: '8px' },
-  diffBadge: {
-    padding: '5px 12px',
+  diffPill: {
+    padding: '5px 14px',
     borderRadius: '20px',
-    fontSize: '12px',
-    fontWeight: '600',
+    fontSize: '12px', fontWeight: '700',
     fontFamily: 'var(--font-mono)',
-    letterSpacing: '0.5px',
+    letterSpacing: '0.4px',
   },
-  title: { fontSize: '28px', fontWeight: '700', letterSpacing: '-0.8px', marginBottom: '6px' },
+  title: {
+    fontSize: '30px', fontWeight: '700',
+    letterSpacing: '-0.8px', marginBottom: '6px',
+    color: 'var(--text-primary)',
+  },
   sub: { fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '2rem' },
   form: {
     background: 'var(--bg-card)',
-    border: '1px solid var(--border)',
+    border: '1.5px solid var(--border)',
     borderRadius: 'var(--radius)',
     padding: '1.75rem',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1.25rem',
+    display: 'flex', flexDirection: 'column', gap: '1.25rem',
+    boxShadow: 'var(--shadow-sm)',
   },
   field: { display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 },
-  label: { fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.8px' },
+  label: {
+    fontSize: '11px', fontWeight: '700',
+    color: 'var(--text-secondary)',
+    textTransform: 'uppercase', letterSpacing: '0.9px',
+  },
   row: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' },
-  actions: { display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '0.5rem' },
+  actions: { display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '0.25rem' },
   cancelBtn: {
     background: 'transparent',
-    border: '1px solid var(--border)',
+    border: '1.5px solid var(--border)',
     color: 'var(--text-secondary)',
     borderRadius: 'var(--radius-sm)',
     padding: '10px 20px',
-    fontSize: '14px',
+    fontSize: '14px', fontWeight: '500',
     fontFamily: 'var(--font-display)',
     cursor: 'pointer',
   },
   saveBtn: {
     background: 'var(--accent)',
-    color: 'white',
-    border: 'none',
+    color: '#fff', border: 'none',
     borderRadius: 'var(--radius-sm)',
     padding: '10px 24px',
-    fontSize: '14px',
-    fontWeight: '600',
+    fontSize: '14px', fontWeight: '700',
     fontFamily: 'var(--font-display)',
     cursor: 'pointer',
   },

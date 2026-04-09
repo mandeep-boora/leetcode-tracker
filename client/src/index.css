@@ -5,24 +5,32 @@
 }
 
 :root {
-  --bg: #0d0d0f;
-  --bg-card: #141416;
-  --bg-elevated: #1a1a1e;
-  --border: rgba(255,255,255,0.07);
-  --border-hover: rgba(255,255,255,0.14);
-  --accent: #7c6cff;
-  --accent-dim: rgba(124,108,255,0.12);
-  --accent-glow: rgba(124,108,255,0.3);
-  --green: #34d399;
-  --amber: #fbbf24;
-  --red: #f87171;
-  --text-primary: #f0f0f2;
-  --text-secondary: #888899;
-  --text-muted: #555566;
+  --bg:           #FEFEF8;
+  --bg-card:      #FFFFFF;
+  --bg-elevated:  #F5F5EE;
+  --bg-hover:     #EEEEE6;
+  --border:       rgba(0,0,0,0.08);
+  --border-hover: rgba(0,0,0,0.16);
+
+  --accent:       #15B441;
+  --accent-dark:  #0E8A30;
+  --accent-dim:   rgba(21,180,65,0.10);
+  --accent-glow:  rgba(21,180,65,0.25);
+
+  --amber:        #D97706;
+  --red:          #DC2626;
+
+  --text-primary:   #1A1A14;
+  --text-secondary: #6B6B5E;
+  --text-muted:     #AAAAA0;
+
   --font-display: 'Syne', sans-serif;
-  --font-mono: 'DM Mono', monospace;
-  --radius: 12px;
-  --radius-sm: 8px;
+  --font-mono:    'DM Mono', monospace;
+  --radius:       14px;
+  --radius-sm:    9px;
+
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
 }
 
 html, body, #root {
@@ -33,27 +41,28 @@ html, body, #root {
   -webkit-font-smoothing: antialiased;
 }
 
-a { color: var(--accent); text-decoration: none; }
+a { color: var(--accent-dark); text-decoration: none; font-weight: 500; }
 a:hover { text-decoration: underline; }
 
 input, select, textarea {
   font-family: var(--font-display);
   background: var(--bg-elevated);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
   font-size: 14px;
   padding: 10px 14px;
   width: 100%;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
 input::placeholder, textarea::placeholder { color: var(--text-muted); }
 input:focus, select:focus, textarea:focus {
   border-color: var(--accent);
+  background: #fff;
   box-shadow: 0 0 0 3px var(--accent-dim);
 }
-select option { background: var(--bg-elevated); }
+select option { background: #fff; }
 textarea { resize: vertical; min-height: 80px; }
 
 button {
@@ -66,4 +75,4 @@ button {
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 3px; }
